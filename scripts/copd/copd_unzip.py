@@ -4,8 +4,8 @@ import zipfile
 
 def main():
     # dir-lab data directory
-    DATA_DIR = "/home/jacky/DIIR-JK-NAS/data/lung_data/DIR_LAB_4DCT/zip"
-    OUTPUT_DIR = "/home/jacky/DIIR-JK-NAS/data/lung_data/DIR_LAB_4DCT/unzip"
+    DATA_DIR = "/home/jacky/DIIR-JK-NAS/data/LungDataCOPD/zip"
+    OUTPUT_DIR = "/home/jacky/DIIR-JK-NAS/data/LungDataCOPD/unzip"
 
     os.makedirs(OUTPUT_DIR,exist_ok=True)
 

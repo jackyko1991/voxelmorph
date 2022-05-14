@@ -8,9 +8,19 @@ def resample(in_path, out_path, output_size=[], output_spacing=[]):
         return
 
     image = sitk.ReadImage(in_path)
+
+    # tqdm.write("input image path:".format(in_path))
+    # tqdm.write("input image size: ({:.2f},{:.2f},{:.2f})".format(image.GetSize()[0],image.GetSize()[1],image.GetSize()[2]))
+    # tqdm.write("input image spacing: ({:.2f},{:.2f},{:.2f})".format(image.GetSpacing()[0],image.GetSpacing()[1],image.GetSpacing()[2]))
+    # tqdm.write("input image origin: ({:.2f},{:.2f},{:.2f})".format(image.GetOrigin()[0],image.GetOrigin()[1],image.GetOrigin()[2]))
+
     image_center = image.TransformIndexToPhysicalPoint([round(image.GetSize()[i]/2) for i in range(3)])
 
+    # tqdm.write("input image center: ({:.2f},{:.2f},{:.2f})".format(image_center[0],image_center[1],image_center[2]))
+
     new_origin = [image_center[i] - output_size[i]/2* output_spacing[i]*image.GetDirection()[3*i+i] for i in range(3)]
+
+    # tqdm.write("output image origin: ({:.2f},{:.2f},{:.2f})".format(new_origin[0],new_origin[1],new_origin[2]))
 
     # resample on image
     resampler = sitk.ResampleImageFilter()
@@ -30,8 +40,8 @@ def resample(in_path, out_path, output_size=[], output_spacing=[]):
     normalizer = sitk.IntensityWindowingImageFilter()
     normalizer.SetOutputMaximum(1)
     normalizer.SetOutputMinimum(0)
-    normalizer.SetWindowMaximum(1024)
-    normalizer.SetWindowMinimum(-1000)
+    normalizer.SetWindowMaximum(2048)
+    normalizer.SetWindowMinimum(0)
     image_output = normalizer.Execute(image_output)
 
     writer = sitk.ImageFileWriter()
@@ -39,20 +49,17 @@ def resample(in_path, out_path, output_size=[], output_spacing=[]):
     writer.Execute(image_output)
 
 def main():
-    # pwh data directory
-    DATA_DIR = "/mnt/DIIR-JK-NAS/data/LungDataPWH/data"
-    OUTPUT_DIR = "/mnt/DIIR-JK-NAS/data/LungDataPWH/data_normalized"
-    # DATA_DIR = "/home/jacky/data/pwh/original/"
-    # OUTPUT_DIR = "/home/jacky/data/pwh/normalized/"
+    # dir-lab data directory
+    DATA_DIR = "/home/jacky/DIIR-JK-NAS/data/LungDataCOPD/unzip"
+    OUTPUT_DIR = "/home/jacky/DIIR-JK-NAS/data/LungDataCOPD/normalized"
+    # DATA_DIR = "/home/jacky/data/dir-lab/original/"
+    # OUTPUT_DIR = "/home/jacky/data/dir-lab/normalized/"
     OUTPUT_SHAPE = [128,128,128]
     OUTPUT_SPACING = [2.5,2.5,2.5]
 
     files = []
 
-    os.makedirs(OUTPUT_DIR,exist_ok=True)
-
     pbar1 = tqdm(os.listdir(DATA_DIR))
-
     for case in pbar1:
         pbar1.set_description(case)
         if not os.path.isdir(os.path.join(DATA_DIR,case)):
@@ -63,10 +70,13 @@ def main():
 
         for file in pbar2:
             pbar2.set_description(file)
+            if not file.split(".")[1]=="nii":
+                continue
             input_path = os.path.join(DATA_DIR,case,file)
             output_path = os.path.join(OUTPUT_DIR,case,file)
 
             files.append(os.path.join(OUTPUT_DIR,case,file))
+            # files.append(os.path.join(case,file))
             resample(input_path,output_path,OUTPUT_SHAPE,OUTPUT_SPACING)
 
     textfile = open(os.path.join(OUTPUT_DIR,"data_list.txt"), "w")
