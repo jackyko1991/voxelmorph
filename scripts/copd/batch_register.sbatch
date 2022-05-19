@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=synthmorph_pwh
-#SBATCH --output=/home/jacky/Projects/voxelmorph/slurm_log/synthmorph_pwh.log
+#SBATCH --job-name=synthmorph_copd
+#SBATCH --output=/home/jacky/Projects/voxelmorph/slurm_log/synthmorph_copd.log
 #
 #SBATCH --ntasks=1
 #SBATCH --mem=64g
@@ -16,16 +16,18 @@ export PYTHONPATH=/home/jacky/anaconda3/envs/voxelmorph/lib/python3.6/site-packa
 # VXM_PROJ_DIR=/home/jacky/Projects/voxelmorph
 VXM_PROJ_DIR=/mnt/DIIR-JK-NAS/projects/voxelmorph
 
-# PWH_DATA_DIR=/home/jacky/data/pwh/normalized
-PWH_DATA_DIR=/mnt/DIIR-JK-NAS/data/LungDataPWH/data_normalized
-OUTPUT_DIR=/mnt/DIIR-JK-NAS/data/LungDataPWH/registered_voxelmorph
-# OUTPUT_DIR=/home/jacky/data/pwh/registered_synthmorph
+# COPD_DATA_DIR=/home/jacky/data/copd/normalized
+COPD_DATA_DIR=/mnt/DIIR-JK-NAS/data/LungDataCOPD/normalized
+# OUTPUT_DIR=/home/jacky/data/copd/registered_synthmorph
+OUTPUT_DIR=/mnt/DIIR-JK-NAS/data/LungDataCOPD/registered_voxelmorph
 
+# MODEL=/home/jacky/Projects/voxelmorph/models/dir-lab/1500.h5
 MODEL=/home/jacky/DIIR-JK-NAS/projects/voxelmorph/models/dir-lab/1500.h5
 # MODEL=/home/jacky/Projects/voxelmorph/models/synthmorph/weights.h5
+
 echo "Using voxelmorph model:" $MODEL
 
-for case in $PWH_DATA_DIR/*; do
+for case in $COPD_DATA_DIR/*; do
     if [ ! -d "$case" ]; then
         continue
     fi
